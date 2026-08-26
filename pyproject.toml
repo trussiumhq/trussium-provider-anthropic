@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "trussium-provider-anthropic"
+version = "0.1.0"
+description = "Trussium provider plugin for Anthropic Messages API."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "httpx>=0.28.0",
+    "trussium @ git+https://github.com/trussiumhq/trussium.git@v0.59.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trussium_provider_anthropic"]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
