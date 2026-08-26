@@ -39,9 +39,7 @@ def test_complete_normalizes_message_response() -> None:
             },
         )
 
-    client = httpx.AsyncClient(
-        transport=httpx.MockTransport(handler), base_url="http://anthropic"
-    )
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler), base_url="http://anthropic")
     capability = AnthropicChatCapability("test-key", client=client)
     response = asyncio.run(capability.complete(request()))
     assert response.provider == "anthropic"
@@ -58,13 +56,9 @@ def test_stream_normalizes_sse_lifecycle() -> None:
                 'data: {"type":"message_stop"}',
             ]
         )
-        return httpx.Response(
-            200, text=body, headers={"content-type": "text/event-stream"}
-        )
+        return httpx.Response(200, text=body, headers={"content-type": "text/event-stream"})
 
-    client = httpx.AsyncClient(
-        transport=httpx.MockTransport(handler), base_url="http://anthropic"
-    )
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler), base_url="http://anthropic")
     capability = AnthropicChatCapability("test-key", client=client)
 
     async def collect() -> list[ChatStreamEvent]:
