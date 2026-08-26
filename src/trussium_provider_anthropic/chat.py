@@ -65,9 +65,7 @@ class AnthropicChatCapability(ChatCapability):
             ) from error
         return self._normalize_response(response.json())
 
-    async def stream(
-        self, request: ChatCompletionRequest
-    ) -> AsyncIterator[ChatStreamEvent]:
+    async def stream(self, request: ChatCompletionRequest) -> AsyncIterator[ChatStreamEvent]:
         response_id: str | None = None
         model = request.model
         input_tokens = 0
@@ -91,15 +89,13 @@ class AnthropicChatCapability(ChatCapability):
                             message = event["message"]
                             response_id = str(message["id"])
                             model = str(message.get("model", model))
-                            input_tokens = int(
-                                message.get("usage", {}).get("input_tokens", 0)
-                            )
+                            input_tokens = int(message.get("usage", {}).get("input_tokens", 0))
                             yield ChatStreamStartEvent(
                                 id=response_id, provider=self.provider_name, model=model
                             )
-                        elif event_type == "content_block_delta" and event.get(
-                            "delta", {}
-                        ).get("text"):
+                        elif event_type == "content_block_delta" and event.get("delta", {}).get(
+                            "text"
+                        ):
                             if response_id is None:
                                 yield ChatStreamErrorEvent(
                                     id=None,
@@ -118,9 +114,7 @@ class AnthropicChatCapability(ChatCapability):
                                     message="Anthropic emitted completion before message start.",
                                 )
                                 return
-                            output_tokens = int(
-                                event.get("usage", {}).get("output_tokens", 0)
-                            )
+                            output_tokens = int(event.get("usage", {}).get("output_tokens", 0))
                             yield ChatStreamEndEvent(
                                 id=response_id,
                                 finish_reason=self._finish_reason(
@@ -157,9 +151,7 @@ class AnthropicChatCapability(ChatCapability):
     @staticmethod
     def _payload(request: ChatCompletionRequest, *, stream: bool) -> dict[str, Any]:
         system = [
-            message.content
-            for message in request.messages
-            if message.role == ChatRole.SYSTEM
+            message.content for message in request.messages if message.role == ChatRole.SYSTEM
         ]
         messages = [
             {"role": message.role.value, "content": message.content}
@@ -178,9 +170,7 @@ class AnthropicChatCapability(ChatCapability):
     def _normalize_response(self, payload: Mapping[str, Any]) -> ChatCompletionResponse:
         try:
             text = "".join(
-                str(block["text"])
-                for block in payload["content"]
-                if block.get("type") == "text"
+                str(block["text"]) for block in payload["content"] if block.get("type") == "text"
             )
             if not text:
                 raise ValueError("missing text content")
@@ -221,9 +211,7 @@ class AnthropicChatCapability(ChatCapability):
 
     @staticmethod
     def _status_error(status_code: int) -> AnthropicProviderError:
-        code = (
-            "anthropic_rate_limited" if status_code == 429 else "anthropic_http_error"
-        )
+        code = "anthropic_rate_limited" if status_code == 429 else "anthropic_http_error"
         return AnthropicProviderError("Anthropic request failed", code=code)
 
     @staticmethod
