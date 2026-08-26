@@ -5,7 +5,6 @@ from collections.abc import AsyncIterator, Mapping
 from typing import Any
 
 import httpx
-
 from trussium.capabilities.chat import (
     ChatCapability,
     ChatCompletionChoice,

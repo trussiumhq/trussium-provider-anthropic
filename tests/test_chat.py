@@ -3,7 +3,6 @@
 import asyncio
 
 import httpx
-
 from trussium.capabilities.chat import (
     ChatCompletionRequest,
     ChatMessage,
@@ -11,6 +10,7 @@ from trussium.capabilities.chat import (
     ChatStreamErrorEvent,
     ChatStreamEvent,
 )
+
 from trussium_provider_anthropic import AnthropicChatCapability
 
 
@@ -48,14 +48,7 @@ def test_complete_normalizes_message_response() -> None:
 
 def test_stream_normalizes_sse_lifecycle() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
-        body = "\n".join(
-            [
-                'data: {"type":"message_start","message":{"id":"msg-1","model":"claude-sonnet","usage":{"input_tokens":2}}}',
-                'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"hi"}}',
-                'data: {"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":1}}',
-                'data: {"type":"message_stop"}',
-            ]
-        )
+        body = 'data: {"type":"message_start","message":{"id":"msg-1","model":"claude-sonnet","usage":{"input_tokens":2}}}\ndata: {"type":"content_block_delta","delta":{"type":"text_delta","text":"hi"}}\ndata: {"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":1}}\ndata: {"type":"message_stop"}'
         return httpx.Response(200, text=body, headers={"content-type": "text/event-stream"})
 
     client = httpx.AsyncClient(transport=httpx.MockTransport(handler), base_url="http://anthropic")
