@@ -17,6 +17,9 @@ dependencies = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/trussium_provider_anthropic"]
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [dependency-groups]
 dev = [
     "mypy>=1.17.0",
