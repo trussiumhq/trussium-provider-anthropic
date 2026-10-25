@@ -1,0 +1,25 @@
+name: Dependency audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: uv sync --all-groups --locked
+      - name: Audit the synced environment
+        run: uv run --with pip-audit --no-sync pip-audit --path .venv/lib/python3.12/site-packages
